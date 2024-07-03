@@ -30,6 +30,13 @@ console.log(isWeekend(date));
 
 //* Bai 4:
 
+const convertTime = (date: Date) => {
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  return hours * 60 + minutes;
+};
+console.log(convertTime(new Date()) + " minutes");
+
 //* Bai 5:
 
 const daysSinceStartOfYear = () => {
@@ -49,24 +56,70 @@ const calculateAge = (date: Date) => {
 
 console.log(calculateAge(new Date(2003, 5, 5)));
 //* Bai 7:
-//* Bai 9:
-//* Bai 10:
-//* Bai 11:
 
-type TData = {
-  name: string;
-  age: number;
-  isStatus: boolean;
-  a: {
-    a: number[];
-    b: {
-      c: number;
-    };
-  };
-  c: string[];
+const startOfWeek = (date: Date) => {
+  // get date (1-31) -> day (0 - 6)
+  var diff =
+    date.getDate() - date.getDay() + 1 + (date.getDay() === 0 ? -6 : 0);
+  console.log(diff);
+  return new Date(date.setDate(diff));
 };
 
-const obj: TData = {
+console.log("TEST: ", startOfWeek(new Date(2024, 6, 2)));
+
+//* Bai 8:
+
+const endOfWeek = (date: Date) => {
+  // get date (1-31) -> day (0 - 6)
+  var diff = date.getDate() - date.getDay() + 1 + (date.getDay() === 0 ? 0 : 6);
+  return new Date(date.setDate(diff));
+};
+
+console.log(endOfWeek(new Date()));
+//* Bai 9:
+
+const coundownToTetHoliday = (countdownDate: Date = new Date(2025, 0, 1)) => {
+  const coundownIntervalTimer = setInterval(() => {
+    const now = new Date();
+    const distance = countdownDate.getTime() - now.getTime();
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor(
+      (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    );
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    console.log(`${days} ngày ${hours} giờ ${minutes} phút ${seconds} giây`);
+
+    if (distance < 0) {
+      clearInterval(coundownIntervalTimer);
+    }
+  }, 1000);
+};
+
+// coundownToTetHoliday();
+
+//* Bai 10:
+const calcTime = (time: string, x: number) => {
+  if (!time.match(/^(0-9)[2]:(0-9)[2]:(0-9)[2]$/))
+    return "Thời gian không đúng định dạng";
+
+  const [hours, minutes, seconds] = time.split(":");
+  const date = new Date(+hours, +minutes, +seconds);
+  date.setSeconds(date.getSeconds() + +x);
+
+  const _hours = date.getHours();
+  const _minutes = date.getMinutes();
+  const _seconds = date.getSeconds();
+
+  return `${_hours} giờ ${_minutes} phút ${_seconds} giây`;
+};
+
+calcTime("09:05:04", 10);
+//* Bai 11:
+
+const obj = {
   name: "Vu",
   age: 21,
   isStatus: true,
@@ -79,4 +132,39 @@ const obj: TData = {
   c: ["a", "b", "c"],
 };
 
-function resetData(obj: TData) {}
+function resetData(obj: any) {
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      if (typeof obj[key] === "string") {
+        obj[key] = "";
+      } else if (typeof obj[key] === "number") {
+        obj[key] = 0;
+      } else if (typeof obj[key] === "boolean") {
+        obj[key] = false;
+      } else if (Array.isArray(obj[key])) {
+        if (typeof obj[key][0] === "number") {
+          for (let i = 0; i < (obj[key] as number[]).length; i++) {
+            if (typeof obj[key][i] === "number") {
+              obj[key][i] = 0;
+            }
+            if (typeof obj[key][i] === "string") {
+              obj[key][i] = "";
+            }
+            if (typeof obj[key][i] === "boolean") {
+              obj[key][i] = false;
+            }
+          }
+        }
+      } else if (obj[key] !== null && typeof obj[key] === "object") {
+        resetData(obj[key]);
+      } else {
+        obj[key] = null;
+      }
+    }
+  }
+  return obj;
+}
+
+console.log("Before reset:", obj);
+resetData(obj);
+console.log("After reset:", obj);
