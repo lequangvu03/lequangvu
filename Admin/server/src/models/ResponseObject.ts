@@ -6,3 +6,13 @@ export class ResponseObject<T> {
     this.data = data
   }
 }
+
+export class ExpiredTokenError {
+  message: string
+  name: string
+
+  constructor({ message, name }: { message: string; name: string }) {
+    this.message = message
+    this.name = name
+  }
+}

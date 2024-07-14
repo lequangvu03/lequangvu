@@ -1,5 +1,6 @@
 import jwt, { SignOptions } from 'jsonwebtoken'
-import { TokenPayload } from '~/types/requests/user.requests'
+import { ExpiredTokenError } from '~/models/ResponseObject'
+import { TokenPayload } from '~/types/requests/admin.requests'
 
 export const signToken = ({
   payload,
@@ -12,7 +13,17 @@ export const signToken = ({
 }) => {
   return new Promise<string>((resolve, reject) => {
     jwt.sign(payload, privateKey, options, function (error, token) {
-      if (error) reject(error)
+      if (error) {
+        if (error.name === 'TokenExpiredError') {
+          return reject(
+            new ExpiredTokenError({
+              message: 'Expired token',
+              name: 'EXPIRED_TOKEN'
+            })
+          )
+        }
+        return reject(error)
+      }
       resolve(token as string)
     })
   })
@@ -21,7 +32,7 @@ export const signToken = ({
 export const verifyToken = ({ privateKey, token }: { token: string; privateKey: string }) => {
   return new Promise<TokenPayload>((resolve, reject) => {
     jwt.verify(token, privateKey, function (error, decoded) {
-      if (error) reject(error)
+      if (error) return reject(error)
       resolve(decoded as TokenPayload)
     })
   })

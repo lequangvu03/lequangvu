@@ -1,5 +1,5 @@
-import { Table, TableProps, Pagination, Popconfirm } from 'antd'
-import { TStudent } from '../../../types/students'
+import { Table, TableProps, Pagination, Popconfirm, notification } from 'antd'
+import { TStudent } from '../../types/students'
 import icons from '../../assets/icons'
 import styles from './style.module.scss'
 import classNames from 'classnames/bind'
@@ -40,15 +40,21 @@ const columns: TableProps<DataType>['columns'] = [
   },
   {
     title: 'Email',
-    dataIndex: 'email'
+    dataIndex: 'email',
+    sorter: (a, b) => a.name.localeCompare(b.name),
+    sortDirections: ['ascend', 'descend']
   },
   {
     title: 'Phone',
-    dataIndex: 'phone'
+    dataIndex: 'phone',
+    sorter: (a, b) => a.name.localeCompare(b.name),
+    sortDirections: ['ascend', 'descend']
   },
   {
     title: 'Enroll Number',
-    dataIndex: 'enrollNumber'
+    dataIndex: 'enrollNumber',
+    sorter: (a, b) => a.name.localeCompare(b.name),
+    sortDirections: ['ascend', 'descend']
   },
   {
     title: 'Date of admission',
@@ -66,9 +72,14 @@ const columns: TableProps<DataType>['columns'] = [
           title='Delete the student'
           description='Are you sure to delete this student?'
           onConfirm={async () => {
-            console.log('Delete student ' + id)
+            notification.success({
+              message: `Deleted student ${id} successfully`,
+              duration: 3
+            })
           }}
-          onCancel={() => {}}
+          onCancel={() => {
+            console.log('Do nothing!')
+          }}
           okText='Yes'
           cancelText='No'
         >
@@ -77,8 +88,7 @@ const columns: TableProps<DataType>['columns'] = [
           </button>
         </Popconfirm>
       </div>
-    ),
-    fixed: 'right'
+    )
   }
 ]
 
@@ -89,8 +99,8 @@ const dataSource: DataType[] = [
     image: images.avatar,
     name: 'Karthi',
     email: 'karthi@gmmail.com',
-    phone: '7305477760',
-    enrollNumber: '1234567305477760',
+    phone: '73054093760',
+    enrollNumber: '12345673032477760',
     dateOfAdmission: '08-Dec, 2021'
   },
   {
@@ -122,7 +132,15 @@ function TableStudents({ students }: TableStudentsProps) {
         </header>
       </div>
       <div className={cx('table__wrapper')}>
-        <Table dataSource={dataSource} columns={columns} pagination={false} showSorterTooltip={false} />
+        <Table
+          className={cx('table__students')}
+          dataSource={dataSource}
+          columns={columns}
+          pagination={false}
+          showSorterTooltip={false}
+        />
+      </div>
+      <div className={cx('pagination-wrapper')}>
         <Pagination defaultCurrent={1} total={50} align='end' className={cx('pagination')} />
       </div>
     </div>

@@ -1,25 +1,25 @@
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios'
 import {
-  getAccessTokenFromLocalStorage,
-  getRefreshTokenFromLocalStorage,
+  getAccessTokenFromCookie,
+  getRefreshTokenFromCookie,
   isAxiosExpiredAccessTokenError,
   isAxiosUnauthorizedError,
-  removeAuthFromLocalStorage,
-  setAccessTokenToLocalStorage,
-  setProfileToLocalStorage,
-  setRefreshTokenToLocalStorage
+  removeAuthFromCookie,
+  setAccessTokenToLocalCookie,
+  setProfileToCookie,
+  setRefreshTokenToCookie
 } from '../lib/utils'
 import { AuthResponse, RefreshTokenResponse } from '../types/responses'
 
-class Http {
+class Request {
   instance: AxiosInstance
   private accessToken: string
   private refreshToken: string
   private refreshTokenRequest: Promise<string | undefined> | null
 
   constructor() {
-    this.accessToken = getAccessTokenFromLocalStorage()
-    this.refreshToken = getRefreshTokenFromLocalStorage()
+    this.accessToken = getAccessTokenFromCookie()
+    this.refreshToken = getRefreshTokenFromCookie()
     this.refreshTokenRequest = null
     this.instance = axios.create({
       baseURL: import.meta.env.VITE_BASE_URL,
@@ -28,8 +28,8 @@ class Http {
 
     this.instance.interceptors.request.use(
       (config) => {
-        this.accessToken = getAccessTokenFromLocalStorage()
-        this.refreshToken = getRefreshTokenFromLocalStorage()
+        this.accessToken = getAccessTokenFromCookie()
+        this.refreshToken = getRefreshTokenFromCookie()
 
         if (this.accessToken && config.headers) {
           config.headers.Authorization = `Bearer ${this.accessToken}`
@@ -48,13 +48,13 @@ class Http {
           const { data, message } = response.data as AuthResponse
           console.log(message)
           const { access_token, refresh_token } = data
-          setAccessTokenToLocalStorage(access_token)
-          setRefreshTokenToLocalStorage(refresh_token)
-          setProfileToLocalStorage({ email: 'Le quang vu' })
+          setAccessTokenToLocalCookie(access_token)
+          setRefreshTokenToCookie(refresh_token)
+          setProfileToCookie(data.user)
         }
 
         if (url === '/auth/logout') {
-          removeAuthFromLocalStorage()
+          removeAuthFromCookie()
         }
         return response
       },
@@ -101,11 +101,11 @@ class Http {
         const { access_token } = res.data.data
         console.log('refresh', access_token)
         this.accessToken = access_token
-        setAccessTokenToLocalStorage(access_token)
+        setAccessTokenToLocalCookie(access_token)
         return this.accessToken
       })
       .catch((error) => {
-        removeAuthFromLocalStorage()
+        removeAuthFromCookie()
         this.accessToken = ''
         this.refreshToken = ''
         throw error
@@ -113,6 +113,6 @@ class Http {
   }
 }
 
-const http = new Http().instance
+const request = new Request().instance
 
-export default http
+export default request

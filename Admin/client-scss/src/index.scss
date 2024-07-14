@@ -1,10 +1,12 @@
 @font-face {
-  font-family: MontserratRegular;
+  font-family: Montserrat;
+  font-weight: 400;
   src: url(./assets/fonts/Montserrat-Regular.ttf) format('truetype');
 }
 
 @font-face {
-  font-family: MontserratBold;
+  font-family: Montserrat;
+  font-weight: 700;
   src: url(./assets/fonts/Montserrat-Bold.ttf) format('truetype');
 }
 
@@ -16,10 +18,17 @@
 }
 
 html {
-  font-family: 'MontserratRegular';
+  font-family: Montserrat;
 }
 
 body {
   min-height: 100vh;
   overflow: hidden;
+}
+
+td {
+  overflow: hidden;
+  // max-width: 100px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

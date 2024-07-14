@@ -1,4 +1,4 @@
-import { TPayment } from './../../types/payments.d'
+import { TPayment } from '../types/payments'
 const payments: TPayment[] = [
   {
     id: 1,

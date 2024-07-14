@@ -1,10 +1,12 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import navlinks from '../../constants/links'
 import HeaderBrandTitle from '../HeaderBrandTitle'
 import images from '../../assets/images'
 import icons from '../../assets/icons'
 import styles from './style.module.scss'
 import classNames from 'classnames/bind'
+import useAuth from '../../hooks/useAuth'
+import { useLogoutMutation } from '../../hooks/data/auth.data'
 const cx = classNames.bind(styles)
 
 type SidebarProps = {
@@ -12,6 +14,15 @@ type SidebarProps = {
 }
 
 function Sidebar({ className }: SidebarProps) {
+  const logoutMutation = useLogoutMutation()
+  const { setIsAuthenticated } = useAuth()
+  const navigation = useNavigate()
+  const handleLogout = () => {
+    navigation('/sign-in')
+    logoutMutation.mutate()
+    setIsAuthenticated(false)
+  }
+
   return (
     <aside className={cx('sidebar', className)}>
       <HeaderBrandTitle label='CRUD OPERATIONS' className={cx('sidebar__header--title')} />
@@ -44,7 +55,7 @@ function Sidebar({ className }: SidebarProps) {
         ))}
       </ul>
       <div>
-        <button className={cx('button__logout')}>
+        <button className={cx('button__logout')} onClick={handleLogout}>
           <span className={cx('button__label')}>Logout</span>
           <img src={icons.logout} />
         </button>

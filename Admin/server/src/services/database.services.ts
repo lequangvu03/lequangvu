@@ -2,7 +2,7 @@ import { MongoClient, Db, Collection } from 'mongodb'
 import envs from '~/constants/env-variables'
 import env from '~/constants/env-variables'
 import { RefreshToken } from '~/models/schemas/refresh-token.model'
-import User from '~/models/schemas/user.model'
+import User from '~/models/schemas/admin.model'
 
 const uri = `mongodb+srv://${env.dbUsername}:${env.dbPassword}@twitter.o34ippp.mongodb.net/?retryWrites=true&w=majority&appName=Twitter`
 

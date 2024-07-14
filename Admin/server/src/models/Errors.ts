@@ -3,6 +3,7 @@ import HTTP_RESPONSE_STATUS_CODES from '~/constants/http-status-codes'
 interface IServerError {
   message: string
   status: number
+  renderAsHTML?: boolean
 }
 
 type TErrors = Record<
@@ -16,17 +17,19 @@ type TErrors = Record<
 export class ServerError implements IServerError {
   message: string
   status: number
+  renderAsHTML?: boolean
 
-  constructor({ message, status }: ServerError) {
+  constructor({ message, status, renderAsHTML }: ServerError) {
     this.message = message
     this.status = status
+    this.renderAsHTML = renderAsHTML
   }
 }
 
 export class EntityError extends ServerError {
-  errors: TErrors
-  constructor({ message = 'Validation Error', errors }: { message?: string; errors: TErrors }) {
+  data: TErrors
+  constructor({ message = 'Validation Error', data }: { message?: string; data: TErrors }) {
     super({ message, status: HTTP_RESPONSE_STATUS_CODES.UNPROCESSABLE_CONTENT })
-    this.errors = errors
+    this.data = data
   }
 }

@@ -23,7 +23,7 @@
     font-size: 20px;
     display: none;
     border-left: 4px solid $grey;
-    font-family: MontserratBold;
+    font-weight: 700;
   }
 
   &__nav {
@@ -62,13 +62,20 @@
   }
 
   .nav__label {
-    margin-left: 15px;
+    // margin-left: 10px;
     display: none;
   }
 
   .button__label {
     display: none;
   }
+}
+
+.nav__icon-wrapper {
+  width: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .sidebar__info {
@@ -168,7 +175,7 @@
         width: 100%;
         justify-content: flex-start;
         padding-bottom: 13px;
-        padding-left: 10px;
+        padding-left: 40px;
         padding-top: 11px;
       }
     }

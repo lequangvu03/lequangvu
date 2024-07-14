@@ -1,6 +1,7 @@
 import { IUser } from '../types/types'
-import { getAccessTokenFromLocalStorage, getProfileFromLocalStorage } from '../lib/utils'
+import { getAccessTokenFromCookie, getProfileFromCookie } from '../lib/utils'
 import { createContext, ReactNode, useState } from 'react'
+import { UserVerifyStatus } from '../constants/enums'
 
 export interface IAppContext {
   isAuthenticated: boolean
@@ -11,8 +12,11 @@ export interface IAppContext {
 }
 
 const initialState: IAppContext = {
-  isAuthenticated: Boolean(getAccessTokenFromLocalStorage()),
-  profile: getProfileFromLocalStorage(),
+  isAuthenticated:
+    Boolean(getAccessTokenFromCookie()) &&
+    getProfileFromCookie() &&
+    (getProfileFromCookie() as IUser).verify === UserVerifyStatus.Verify,
+  profile: getProfileFromCookie(),
   setIsAuthenticated: () => null,
   setProfile: () => null,
   reset: () => null
@@ -28,6 +32,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsAuthenticated(false)
     setProfile(null)
   }
+
   return (
     <AppContext.Provider
       value={{

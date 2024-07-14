@@ -1,5 +1,5 @@
 import images from '../assets/images'
-import { TStudent } from './../../types/students.d'
+import { TStudent } from '../types/students'
 const students: TStudent[] = [
   {
     id: 1,

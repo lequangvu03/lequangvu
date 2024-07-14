@@ -1,3 +1,5 @@
+import { IUser } from './types'
+
 export interface SuccessResponse<TData> {
   message: string
   data: TData
@@ -15,4 +17,5 @@ export type RefreshTokenResponse = SuccessResponse<{
 export type AuthResponse = SuccessResponse<{
   refresh_token: string
   access_token: string
+  user: IUser
 }>

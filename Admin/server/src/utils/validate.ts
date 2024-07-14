@@ -16,8 +16,9 @@ const validate = (validation: RunnableValidationChains<ValidationChain>) => {
 
     const objectErrors = errors.mapped()
     const entityError = new EntityError({
-      errors: {}
+      data: {}
     })
+
     // Errors returned are not validation errors: status !== 422
 
     for (const key in objectErrors) {
@@ -26,7 +27,7 @@ const validate = (validation: RunnableValidationChains<ValidationChain>) => {
         return next(msg)
       }
       // Validation errors: status == 422
-      entityError.errors[key] = objectErrors[key]
+      entityError.data[key] = objectErrors[key]
     }
 
     next(entityError)

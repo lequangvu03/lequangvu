@@ -3,24 +3,45 @@ import type { ParamsDictionary } from 'express-serve-static-core'
 import { ObjectId } from 'mongodb'
 import HTTP_RESPONSE_STATUS_CODES from '~/constants/http-status-codes'
 import { ServerError } from '~/models/Errors'
-import User from '~/models/schemas/user.model'
+import User from '~/models/schemas/admin.model'
 import { ResponseObject } from '~/models/ResponseObject'
 import databaseService from '~/services/database.services'
-import userService from '~/services/user.services'
-import { LoginReqBody, RegisterReqBody, TokenPayload } from '~/types/requests/user.requests'
+import userService from '~/services/admin.services'
+import {
+  LoginReqBody,
+  LogoutReqBody,
+  RegisterReqBody,
+  ResendEmailReqBody,
+  TokenPayload
+} from '~/types/requests/admin.requests'
 import { UserVerifyStatus } from '~/constants/enums'
+import { omit } from 'lodash'
 
 export const loginController = async (req: Request<ParamsDictionary, any, LoginReqBody>, res: Response) => {
-  const { _id, verify } = req.user as User
+  const { _id, verify, ...rest } = req.user as User
 
-  const data = await userService.login({
+  if (verify === UserVerifyStatus.Unverified) {
+    return res.status(HTTP_RESPONSE_STATUS_CODES.UNAUTHORIZED).json(
+      new ResponseObject({
+        message: "You account hasn't been verified yet!",
+        data: {}
+      })
+    )
+  }
+
+  const { access_token, refresh_token } = await userService.login({
     user_id: (_id as ObjectId).toString(),
     verify
   })
 
   res.json({
     message: 'Login successfully',
-    data: data
+
+    data: {
+      access_token,
+      refresh_token,
+      user: { ...omit(req.user, ['password', 'email_verify_token']) }
+    }
   })
 }
 
@@ -47,22 +68,20 @@ export const verifyEmailController = async (req: Request, res: Response) => {
   }
 
   if (user.email_verify_token === '') {
-    return res.json(
-      new ResponseObject({
-        message: 'Email already verified',
-        data: {}
-      })
-    )
+    return res.render('pages/verify-notification', {
+      status: HTTP_RESPONSE_STATUS_CODES.OK,
+      success: true,
+      message: 'Email already verified'
+    })
   }
 
-  const result = await userService.verifyEmail(user_id)
+  await userService.verifyEmail(user_id)
 
-  res.json(
-    new ResponseObject({
-      message: 'Email verified successfully',
-      data: result
-    })
-  )
+  return res.render('pages/verify-notification', {
+    status: HTTP_RESPONSE_STATUS_CODES.OK,
+    success: true,
+    message: 'Email verified successfully'
+  })
 }
 
 export const refreshTokenController = async (
@@ -82,10 +101,13 @@ export const refreshTokenController = async (
   )
 }
 
-export const resendEmailVerifyTokenController = async (req: Request, res: Response) => {
-  const { user_id } = req.decoded_access_token as TokenPayload
+export const resendEmailVerifyTokenController = async (
+  req: Request<ParamsDictionary, any, ResendEmailReqBody>,
+  res: Response
+) => {
+  const { email } = req.body
   const user = await databaseService.users.findOne({
-    _id: new ObjectId(user_id)
+    email: email
   })
 
   if (!user) {
@@ -102,11 +124,25 @@ export const resendEmailVerifyTokenController = async (req: Request, res: Respon
       })
     )
   }
-  const result = await userService.resendEmailVerifyToken(user_id)
+  const result = await userService.resendEmailVerifyToken({
+    email,
+    user_id: String(user._id)
+  })
 
   res.json(
     new ResponseObject({
       message: result.message,
+      data: {}
+    })
+  )
+}
+
+export const logoutController = async (req: Request<ParamsDictionary, any, LogoutReqBody>, res: Response) => {
+  const { refresh_token } = req.body
+  await userService.logout(refresh_token)
+  res.json(
+    new ResponseObject({
+      message: 'Logout successfully',
       data: {}
     })
   )

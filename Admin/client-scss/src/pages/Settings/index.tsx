@@ -1,5 +1,11 @@
+import { Button } from 'antd'
+
 function Settings() {
-  return <div></div>
+  return (
+    <div>
+      <Button>Setup</Button>
+    </div>
+  )
 }
 
 export default Settings

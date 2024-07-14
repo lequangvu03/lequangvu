@@ -1,6 +1,6 @@
-import User from './models/schemas/user.model'
+import User from './models/schemas/admin.model'
 import { Request } from 'express'
-import { TokenPayload } from './types/requests/user.requests'
+import { TokenPayload } from './types/requests/admin.requests'
 
 declare module 'express' {
   interface Request {

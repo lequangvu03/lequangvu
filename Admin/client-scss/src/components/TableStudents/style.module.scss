@@ -14,7 +14,7 @@
 
 .table__name {
   font-size: 22px;
-  font-family: MontserratBold;
+  font-weight: 700;
 }
 
 .actions__wrapper {
@@ -60,7 +60,10 @@
 
 .table__wrapper {
   overflow-x: auto;
-  padding: 0 30px;
+  table {
+    table-layout: auto;
+  }
+  // padding: 0 30px;
 }
 
 .avatar__wrapper {
@@ -73,4 +76,34 @@
   overflow: hidden;
   border-radius: 8px;
   object-fit: cover;
+}
+.table__students {
+  border-collapse: separate;
+  border-spacing: 20px;
+}
+.pagination-wrapper {
+  padding: 0 30px;
+}
+
+@media (min-width: 1025px) {
+  .table__wrapper {
+    max-width: calc(100vw - 2 * 30px - 270px);
+    margin-left: 30px;
+  }
+
+  .table__students {
+    min-width: 1024px;
+    width: 100%;
+  }
+}
+
+@media (max-width: 1024px) {
+  .table__wrapper {
+    max-width: calc(100vw - 2 * 30px - 70px);
+    margin-left: 30px;
+  }
+
+  .table__students {
+    width: 1024px;
+  }
 }
